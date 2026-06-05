@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>✨ Alya's Starlight Birthday | 2026 ✨</title>
+    <!-- Google Fonts + Font Awesome 6 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- GSAP for ultra-smooth animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <!-- canvas-confetti for celebratory bursts -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* better for immersive, but text can still be copied */
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0a0718;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            color: #f0edff;
+            position: relative;
+        }
+
+        /* Canvas background: dynamic starfield & cosmic waves */
+        #cosmicCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Main content layer */
+        .journey-container {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        /* Glassmorphic core card — 2026 neo-blur style */
+        .birthday-card {
+            max-width: 700px;
+            width: 100%;
+            background: rgba(12, 10, 25, 0.55);
+            backdrop-filter: blur(14px);
+            border-radius: 3rem;
+            border: 1px solid rgba(255, 110, 180, 0.3);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05) inset, 0 0 30px rgba(255, 80, 160, 0.2);
+            padding: 2rem 2rem 2.2rem;
+            transition: all 0.3s ease;
+        }
+
+        /* Step indicators — minimalist glowing dots */
+        .step-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2.2rem;
+        }
+        .step-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 10px;
+            background: rgba(255, 220, 240, 0.4);
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            cursor: pointer;
+        }
+        .step-dot.active {
+            width: 32px;
+            background: #ff90c0;
+            box-shadow: 0 0 12px #ff60b0;
+        }
+
+        /* Main content area */
+        .step-content {
+            min-height: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.8rem;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .greeting-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFD6E8, #FF9BC0, #C084FC);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.01em;
+            text-align: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .message-text {
+            font-size: 1.08rem;
+            line-height: 1.5;
+            color: #f0eaff;
+            text-align: center;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+        }
+
+        /* Memory cards (step 2) */
+        .memories-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            justify-content: center;
+            margin: 0.8rem 0;
+        }
+        .memory-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(4px);
+            border-radius: 1.8rem;
+            padding: 1.2rem 0.9rem;
+            width: 160px;
+            text-align: center;
+            border: 1px solid rgba(255, 150, 200, 0.3);
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+        .memory-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 120, 180, 0.15);
+            border-color: #ff9bc0;
+            box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+        }
+        .memory-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.7rem;
+            color: #ffb3d1;
+        }
+        .memory-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Heartfelt wish area */
+        .wish-box {
+            background: rgba(255, 210, 230, 0.07);
+            border-radius: 2rem;
+            padding: 1.4rem;
+            text-align: center;
+            border-left: 3px solid #ff88bc;
+        }
+        .floating-heart {
+            display: inline-block;
+            animation: floatHeart 2s infinite ease-in-out;
+            font-size: 1.8rem;
+            margin: 0 4px;
+        }
+        @keyframes floatHeart {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* final celebration style */
+        .celebration-block {
+            text-align: center;
+        }
+        .big-birthday {
+            font-size: 2.8rem;
+            font-family: 'Playfair Display', serif;
+            font-weight: 800;
+            background: linear-gradient(145deg, #FFCDE5, #FF88B0, #D96CFF);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin: 0.5rem 0;
+        }
+        .celebrate-btn {
+            background: linear-gradient(95deg, #ff4690, #c85bff);
+            border: none;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: white;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.2s;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.3);
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .celebrate-btn:hover {
+            transform: scale(1.02);
+            background: linear-gradient(95deg, #ff5c9e, #d46eff);
+            box-shadow: 0 10px 28px #ff469055;
+        }
+
+        /* Navigation buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+        .nav-btn {
+            background: rgba(30, 25, 55, 0.7);
+            border: 1px solid rgba(255, 160, 200, 0.5);
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #ffe3f0;
+            cursor: pointer;
+            transition: 0.2s;
+            backdrop-filter: blur(5px);
+            font-size: 0.9rem;
+        }
+        .nav-btn:hover:not(:disabled) {
+            background: rgba(255, 100, 160, 0.3);
+            border-color: #ff90c0;
+            color: white;
+            transform: translateY(-2px);
+        }
+        .nav-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        /* step transitions */
+        .fade-transition {
+            transition: opacity 0.35s ease, transform 0.3s ease;
+        }
+
+        /* Custom scroll & responsive */
+        @media (max-width: 550px) {
+            .birthday-card {
+                padding: 1.5rem;
+            }
+            .greeting-title {
+                font-size: 1.8rem;
+            }
+            .memories-grid {
+                gap: 0.8rem;
+            }
+            .memory-card {
+                width: 130px;
+            }
+            .big-birthday {
+                font-size: 2rem;
+            }
+        }
+        /* tiny extra glow */
+        .highlight {
+            text-shadow: 0 0 6px #ff9bc0;
+        }
+        hr {
+            border-color: rgba(255, 130, 170, 0.3);
+            width: 80px;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="cosmicCanvas"></canvas>
+
+<div class="journey-container">
+    <div class="birthday-card">
+        <!-- step indicators (interactive dots) -->
+        <div class="step-indicators" id="stepDots">
+            <div class="step-dot" data-step="1"></div>
+            <div class="step-dot" data-step="2"></div>
+            <div class="step-dot" data-step="3"></div>
+            <div class="step-dot" data-step="4"></div>
+        </div>
+
+        <!-- dynamic content area -->
+        <div id="stepContentContainer" class="step-content">
+            <!-- filled by js -->
+        </div>
+
+        <!-- navigation buttons -->
+        <div class="nav-buttons">
+            <button class="nav-btn" id="prevBtn"><i class="fas fa-chevron-left"></i> Previous</button>
+            <button class="nav-btn" id="nextBtn">Next <i class="fas fa-chevron-right"></i></button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- 2026 MODERN BIRTHDAY JOURNEY FOR ALYA ----------
+    const TOTAL_STEPS = 4;
+    let currentStep = 1;
+    let isTransitioning = false;
+
+    // --- Step Content Generator (emotional & personal)
+    function getStepHTML(step) {
+        switch(step) {
+            case 1:
+                return `
+                    <div class="greeting-title">✨ Alya's Starlight Prelude ✨</div>
+                    <div class="message-text">
+                        <i class="fas fa-star-of-life" style="color:#ff9bc0"></i> 
+                        <span style="font-weight:500;">Dear Alya,</span><br/><br/>
+                        Today, the whole universe leans a little closer — because someone extraordinary was born. 
+                        You are the sparkle in every quiet moment, the melody in a world of noise. This isn't just a birthday, 
+                        it's a celebration of your unique light. Welcome to your immersive journey...
+                    </div>
+                    <div class="message-text" style="font-style:italic; background:rgba(255,180,200,0.1); padding:0.8rem; border-radius:2rem;">
+                        <i class="fas fa-feather-alt"></i> Every heartbeat of yours paints the sky in new colors.
+                    </div>
+                    <div style="text-align:center; margin-top:0.5rem"><i class="fa-regular fa-gem"></i> For you, today and always.</div>
+                `;
+            case 2:
+                return `
+                    <div class="greeting-title">🌸 Timeless Fragments 🌸</div>
+                    <div class="message-text">The most beautiful memories are the ones we carry in our smiles. Here are a few treasures that shine like you.</div>
+                    <div class="memories-grid">
+                        <div class="memory-card">
+                            <div class="memory-icon"><i class="fa-regular fa-sun"></i></div>
+                            <div class="memory-text">Your laugh that <br>lights up the room</div>
+                        </div>
+                        <div class="memory-card">
+                            <div class="memory-icon"><i class="fa-regular fa-moon"></i></div>
+                            <div class="memory-text">Late-night talks & <br>endless dreams</div>
+                        </div>
+                        <div class="memory-card">
+                            <div class="memory-icon"><i class="fa-solid fa-cloud-moon"></i></div>
+                            <div class="memory-text">That moment when <br>everything clicked ✨</div>
+                        </div>
+                    </div>
+                    <div class="message-text" style="font-size:0.9rem"><i class="fa-regular fa-heart"></i>   And each memory becomes a constellation named "Alya"</div>
+                `;
+            case 3:
+                return `
+                    <div class="greeting-title">💫 My Heart's Wish for You 💫</div>
+                    <div class="wish-box">
+                        <div class="floating-heart"><i class="fa-solid fa-heart"></i></div>
+                        <div class="floating-heart" style="animation-delay:0.3s"><i class="fa-solid fa-heart"></i></div>
+                        <div class="floating-heart" style="animation-delay:0.6s"><i class="fa-regular fa-star"></i></div>
+                        <p style="margin:1rem 0; line-height:1.5;">May this year gift you joy that doubles itself,<br> 
+                        may your dreams bloom like galaxies, <br>
+                        and may you always feel how deeply cherished you are. <br>
+                        <strong>Alya</strong>, you deserve a lifetime of happiness and magic.  </p>
+                        <div><i class="fa-regular fa-gift"></i>   Every sunrise bows to you today   <i class="fa-regular fa-gift"></i></div>
+                    </div>
+                    <div class="message-text" style="font-size:0.9rem">One click closer to the grand finale ✨</div>
+                `;
+            case 4:
+                return `
+                    <div class="celebration-block">
+                        <div class="big-birthday">🎂 HAPPY BIRTHDAY, ALYA 🎂</div>
+                        <div style="margin: 0.5rem 0;">
+                            <i class="fa-solid fa-champagne-glasses" style="font-size:2rem; color:#ffb7d4;"></i>
+                        </div>
+                        <div class="message-text" style="font-weight:500; margin: 0.5rem 0;">Today the universe throws a party in your honor.</div>
+                        <div class="message-text">You are the protagonist of every beautiful story, the warmth in every heart. Let's make a wish and ignite the sky!</div>
+                        <button id="finalCelebrateBtn" class="celebrate-btn"><i class="fa-regular fa-star"></i> Light the Sky & Celebrate <i class="fa-regular fa-star"></i></button>
+                        <div style="margin-top: 20px; font-size:0.85rem;"><i class="fa-regular fa-message"></i> Click to unleash confetti & birthday magic!</div>
+                    </div>
+                `;
+            default: return `<div>✨ Magic loading ✨</div>`;
+        }
+    }
+
+    // --- Helper: update step content with GSAP crossfade
+    function updateStepUI() {
+        if (isTransitioning) return;
+        isTransitioning = true;
+
+        const container = document.getElementById('stepContentContainer');
+        // fade out
+        gsap.to(container, {
+            duration: 0.2,
+            opacity: 0,
+            y: 8,
+            ease: "power2.in",
+            onComplete: () => {
+                const newHTML = getStepHTML(currentStep);
+                container.innerHTML = newHTML;
+                // after changing content, reattach final button event if step 4
+                if (currentStep === TOTAL_STEPS) {
+                    const celebrateBtn = document.getElementById('finalCelebrateBtn');
+                    if (celebrateBtn) {
+                        celebrateBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            launchMassiveConfetti();
+                            // additional message pop (optional but fun)
+                            const msgDiv = document.createElement('div');
+                            msgDiv.innerText = "🌟 Wish granted! 🌟";
+                            msgDiv.style.position = 'fixed'; msgDiv.style.bottom = '20px'; msgDiv.style.left = '50%';
+                            msgDiv.style.transform = 'translateX(-50%)'; msgDiv.style.background = '#ff66aaee';
+                            msgDiv.style.padding = '10px 20px'; msgDiv.style.borderRadius = '40px';
+                            msgDiv.style.backdropFilter = 'blur(8px)'; msgDiv.style.zIndex = '999';
+                            msgDiv.style.fontWeight = 'bold'; msgDiv.style.color = 'white';
+                            document.body.appendChild(msgDiv);
+                            setTimeout(() => msgDiv.remove(), 2000);
+                        });
+                    }
+                }
+                // update step indicators style
+                updateIndicators();
+                gsap.to(container, {
+                    duration: 0.45,
+                    opacity: 1,
+                    y: 0,
+                    ease: "back.out(0.8)",
+                    onComplete: () => {
+                        isTransitioning = false;
+                    }
+                });
+            }
+        });
+    }
+
+    // update active dot + button states
+    function updateIndicators() {
+        const dots = document.querySelectorAll('.step-dot');
+        dots.forEach((dot, idx) => {
+            const stepNum = idx + 1;
+            if (stepNum === currentStep) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        if (prevBtn) {
+            if (currentStep === 1) prevBtn.disabled = true;
+            else prevBtn.disabled = false;
+        }
+        if (nextBtn) {
+            if (currentStep === TOTAL_STEPS) {
+                nextBtn.innerHTML = '🎉 Celebrate 🎉';
+            } else {
+                nextBtn.innerHTML = 'Next <i class="fas fa-chevron-right"></i>';
+            }
+        }
+
+        // On step 4 entry, also launch small confetti burst as joyful greeting
+        if (currentStep === TOTAL_STEPS) {
+            // mini celebratory burst to welcome the final stage
+            setTimeout(() => {
+                canvasConfetti({ particleCount: 80, spread: 55, origin: { y: 0.6 }, colors: ['#ff9bc0', '#ffd966', '#c57eff'] });
+                canvasConfetti({ particleCount: 30, spread: 100, origin: { y: 0.5, x: 0.2 }, startVelocity: 12 });
+            }, 150);
+        }
+    }
+
+    // massive confetti explosion (2026 style)
+    function launchMassiveConfetti() {
+        const duration = 1500;
+        const end = Date.now() + duration;
+        const colors = ['#ff9bc0', '#ff5e9e', '#cb6eff', '#ffd966', '#ffb347', '#a0f0ff'];
+        (function frame() {
+            canvasConfetti({
+                particleCount: 5,
+                angle: 60,
+                spread: 70,
+                origin: { x: 0, y: 0.6 },
+                colors: colors,
+                startVelocity: 20,
+                gravity: 1.2,
+            });
+            canvasConfetti({
+                particleCount: 5,
+                angle: 120,
+                spread: 70,
+                origin: { x: 1, y: 0.6 },
+                colors: colors,
+                startVelocity: 20,
+            });
+            canvasConfetti({
+                particleCount: 8,
+                spread: 100,
+                origin: { y: 0.7, x: 0.5 },
+                colors: ['#ff88bb', '#ffcc88', '#d08cff'],
+                startVelocity: 18,
+                decay: 0.9,
+            });
+            if (Date.now() < end) {
+                requestAnimationFrame(frame);
+            } else {
+                // final big burst
+                canvasConfetti({ particleCount: 250, spread: 110, origin: { y: 0.6 }, colors: ['#ff9acb', '#ffd966', '#b77eff'], startVelocity: 22 });
+                canvasConfetti({ particleCount: 100, spread: 70, origin: { y: 0.4, x: 0.3 }, startVelocity: 25 });
+                canvasConfetti({ particleCount: 100, spread: 70, origin: { y: 0.4, x: 0.7 }, startVelocity: 25 });
+            }
+        }());
+    }
+
+    // Navigation handlers
+    function nextStep() {
+        if (isTransitioning) return;
+        if (currentStep < TOTAL_STEPS) {
+            currentStep++;
+            updateStepUI();
+        } else if (currentStep === TOTAL_STEPS) {
+            // On celebrate button (final step) we also trigger, but the dedicated button also exists
+            launchMassiveConfetti();
+            // Also trigger an extra floating animation effect
+            const containerDiv = document.querySelector('.birthday-card');
+            if(containerDiv) {
+                gsap.to(containerDiv, { duration: 0.2, scale: 1.01, repeat: 1, yoyo: true, ease: "power1" });
+            }
+        }
+    }
+
+    function prevStep() {
+        if (isTransitioning) return;
+        if (currentStep > 1) {
+            currentStep--;
+            updateStepUI();
+        }
+    }
+
+    // Dot navigation
+    function initDotNavigation() {
+        const dots = document.querySelectorAll('.step-dot');
+        dots.forEach((dot, idx) => {
+            dot.addEventListener('click', () => {
+                if (isTransitioning) return;
+                const targetStep = idx + 1;
+                if (targetStep !== currentStep && targetStep >= 1 && targetStep <= TOTAL_STEPS) {
+                    currentStep = targetStep;
+                    updateStepUI();
+                }
+            });
+        });
+    }
+
+    // --- background cosmic canvas (stars & fluid nebula) - ultra modern 2026 aesthetic
+    const canvas = document.getElementById('cosmicCanvas');
+    let ctx = canvas.getContext('2d');
+    let stars = [];
+    let starCount = 220;
+    let mouseX = 0, mouseY = 0;
+    let width, height;
+
+    function initStars() {
+        stars = [];
+        for (let i = 0; i < starCount; i++) {
+            stars.push({
+                x: Math.random(),
+                y: Math.random(),
+                radius: Math.random() * 2.2 + 0.8,
+                alpha: Math.random() * 0.6 + 0.2,
+                speedX: (Math.random() - 0.5) * 0.0008,
+                speedY: (Math.random() - 0.5) * 0.0005,
+                twinkle: Math.random() * 0.03,
+            });
+        }
+    }
+
+    function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+        drawBackground();
+    }
+
+    function drawBackground() {
+        if (!ctx) return;
+        const grad = ctx.createLinearGradient(0, 0, width, height);
+        grad.addColorStop(0, '#0a0518');
+        grad.addColorStop(0.5, '#16102c');
+        grad.addColorStop(1, '#0e0a1f');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, width, height);
+        
+        // draw stars with parallax based on mouse
+        for (let s of stars) {
+            let offsetX = (mouseX / width) * 12 * (s.radius / 2);
+            let offsetY = (mouseY / height) * 8 * (s.radius / 2);
+            let xPos = (s.x * width + offsetX) % width;
+            let yPos = (s.y * height + offsetY) % height;
+            if (xPos < 0) xPos += width;
+            if (yPos < 0) yPos += height;
+            ctx.beginPath();
+            ctx.arc(xPos, yPos, s.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 210, 240, ${s.alpha + Math.sin(Date.now() * s.twinkle) * 0.1})`;
+            ctx.fill();
+        }
+        
+        // extra floating orbs (ethereal)
+        for (let i = 0; i < 12; i++) {
+            let t = Date.now() * 0.0008 + i;
+            let x = (Math.sin(t) * 0.4 + 0.5) * width;
+            let y = (Math.cos(t * 0.7) * 0.3 + 0.5) * height;
+            let rad = 35 + Math.sin(t) * 12;
+            const grd = ctx.createRadialGradient(x, y, 3, x+5, y-3, rad);
+            grd.addColorStop(0, 'rgba(255,120,180,0.08)');
+            grd.addColorStop(1, 'rgba(100,80,200,0)');
+            ctx.fillStyle = grd;
+            ctx.beginPath();
+            ctx.arc(x, y, rad, 0, Math.PI*2);
+            ctx.fill();
+        }
+    }
+    
+    function animateStars() {
+        if (!ctx) return;
+        drawBackground();
+        requestAnimationFrame(animateStars);
+    }
+    
+    function handleMouseMove(e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    }
+    
+    window.addEventListener('resize', () => {
+        resizeCanvas();
+        initStars();
+    });
+    document.addEventListener('mousemove', handleMouseMove);
+    
+    // start canvas magic
+    resizeCanvas();
+    initStars();
+    animateStars();
+    
+    // --- Initialize the interactive journey
+    function initJourney() {
+        updateStepUI();   // initial load step 1 content
+        initDotNavigation();
+        
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        if (prevBtn) prevBtn.addEventListener('click', prevStep);
+        if (nextBtn) nextBtn.addEventListener('click', nextStep);
+        
+        // extra flourish on load: gentle pulse on card
+        gsap.fromTo('.birthday-card', { y: 20, opacity: 0 }, { duration: 1, y: 0, opacity: 1, ease: 'power3.out', delay: 0.2 });
+    }
+    
+    // start everything when DOM ready
+    document.addEventListener('DOMContentLoaded', initJourney);
+    
+    // small floating heart effect addition in step3 via dynamic? already present but add dynamic spark
+    // also when step changes we can optionally play tiny sound-free feel: no audio needed
+</script>
+
+</body>
+</html>
